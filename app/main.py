@@ -1,4 +1,5 @@
 import time
+import httpx
 import logging
 import uuid
 from contextlib import asynccontextmanager
@@ -23,18 +24,21 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: инициализация клиентов
     logger.info("Starting up...")
-    
-    # Создаём OpenAI клиент с base_url из настроек (поддержка polza.ai и др.)
+
+    # Правильный параметр — proxy (единственное число)
+    proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
+    http_client = httpx.AsyncClient(proxy=proxy_url)
+
     app.state.openai_client = AsyncOpenAI(
         api_key=settings.openai.api_key.get_secret_value(),
-        base_url=settings.openai.base_url,          # <-- добавлено
+        base_url=settings.openai.base_url,
+        http_client=http_client,
         timeout=settings.openai.request_timeout,
         max_retries=settings.openai.max_retries,
     )
-    
-    # Пытаемся подключиться к Redis, но не падаем, если он недоступен
+
+    # ... остальной код (Redis) ...
     try:
         app.state.redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
         await app.state.redis_client.ping()
@@ -45,12 +49,12 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    # Shutdown: закрытие соединений
+    # Shutdown
     await app.state.openai_client.close()
     if app.state.redis_client:
         await app.state.redis_client.close()
+    await http_client.aclose()
     logger.info("Shutdown complete")
-
 
 app = FastAPI(
     title="LLM Service",

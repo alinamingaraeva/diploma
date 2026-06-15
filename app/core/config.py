@@ -10,27 +10,26 @@ class LLMSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="LLM_", extra="ignore")
     
     api_key: SecretStr
-    base_url: str = "https://api.openai.com/v1"          # можно переопределить в .env
-    default_model: str = "gpt-4o-mini"
+    base_url: str = "https://api.polza.ai/v1"          # можно переопределить в .env
+    default_model: str = "openai/gpt-4o-mini"
     request_timeout: float = 30.0
     max_retries: int = 3
 
 
 class Settings(BaseSettings):
-    """Главные настройки приложения, загружаемые из .env."""
     model_config = SettingsConfigDict(
-        env_file=".env",                 # имя файла в корне проекта
-        env_file_encoding="utf-8",       # кодировка
-        env_nested_delimiter="__",       # разделитель для вложенных моделей (LLMSettings)
-        extra="ignore"
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        extra="ignore",
     )
-    
-    # Вложенные настройки OpenAI/LLM (префикс OPENAI__)
-    openai: LLMSettings = LLMSettings()
-    
-    # Redis и кеширование
-    redis_url: str = "redis://localhost:6379"
+
+    app_name: str = "llm-service-asdf"
+    debug: bool = False
+    cors_origins: list[str] = Field(default_factory=lambda: ["*"])
+    redis_url: str = "redis://localhost:6379/0"
     cache_ttl_seconds: int = 3600
+    openai: LLMSettings = Field(default_factory=LLMSettings)
     
     # CORS
     cors_origins: List[str] = ["*"]
