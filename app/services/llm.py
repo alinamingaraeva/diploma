@@ -1,16 +1,16 @@
 import hashlib
 import json
-import logging
-from typing import AsyncIterator, Optional, Dict, Any
-import asyncio
+import time
+from typing import AsyncIterator, Optional
 from openai import AsyncOpenAI
 from redis.asyncio import Redis
+from structlog import get_logger
 
-from app.core.config import get_settings
 from app.core.exceptions import LLMRateLimitError, LLMTimeoutError, LLMAuthError, LLMProviderError
 from app.schemas.chat import ChatRequest, ChatResponse, ChatDelta, Usage
+from app.observability.pii import redact_pii, prompt_hash
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 class LLMService:
     def __init__(self, openai_client: AsyncOpenAI, redis_client: Optional[Redis], settings):
@@ -19,15 +19,13 @@ class LLMService:
         self.settings = settings
 
     def _get_cache_key(self, request: ChatRequest) -> str:
-        """Генерирует ключ кеша на основе запроса (исключая user_id, session_id, stream)"""
         exclude = {"user_id", "session_id", "stream"}
         data = request.model_dump(exclude=exclude, exclude_none=True)
-        # сортируем для стабильности
         json_str = json.dumps(data, sort_keys=True)
         return f"chat:{hashlib.sha256(json_str.encode()).hexdigest()}"
 
     async def complete(self, request: ChatRequest) -> ChatResponse:
-        # 1. Проверяем кеш (если Redis доступен)
+        start_time = time.perf_counter()
         cached = False
         if self.redis:
             cache_key = self._get_cache_key(request)
@@ -37,11 +35,23 @@ class LLMService:
                 try:
                     response = ChatResponse.model_validate_json(cached_data)
                     response.cached = True
+                    # Логируем кешированный ответ
+                    logger.info(
+                        "llm_request_completed",
+                        model=response.model,
+                        cached=True,
+                        input_tokens=response.usage.prompt_tokens,
+                        output_tokens=response.usage.completion_tokens,
+                        total_tokens=response.usage.total_tokens,
+                        latency_ms=(time.perf_counter() - start_time) * 1000,
+                        finish_reason=response.finish_reason,
+                        prompt_hash=prompt_hash(request.messages[0].content if request.messages else ""),
+                        prompt_preview=redact_pii(request.messages[0].content if request.messages else "")[:120],
+                    )
                     return response
                 except Exception as e:
                     logger.warning(f"Failed to parse cached data: {e}")
 
-        # 2. Вызов OpenAI
         model = request.model or self.settings.openai.default_model
         try:
             openai_response = await self.openai.chat.completions.create(
@@ -52,7 +62,6 @@ class LLMService:
                 stream=False,
             )
         except Exception as e:
-            # Преобразуем ошибки OpenAI в доменные
             error_type = type(e).__name__
             if "RateLimit" in error_type:
                 raise LLMRateLimitError(str(e))
@@ -63,18 +72,30 @@ class LLMService:
             else:
                 raise LLMProviderError(str(e))
 
-        # 3. Создаём ответ
         response = ChatResponse.from_openai(openai_response, model=model, cached=False)
 
-        # 4. Сохраняем в кеш (если Redis доступен)
-        if self.redis and not cached:
+        if self.redis:
             cache_key = self._get_cache_key(request)
             await self.redis.setex(cache_key, self.settings.cache_ttl_seconds, response.model_dump_json())
 
+        latency_ms = (time.perf_counter() - start_time) * 1000
+        # Логируем успешный вызов LLM
+        logger.info(
+            "llm_request_completed",
+            model=response.model,
+            cached=False,
+            input_tokens=response.usage.prompt_tokens,
+            output_tokens=response.usage.completion_tokens,
+            total_tokens=response.usage.total_tokens,
+            latency_ms=latency_ms,
+            finish_reason=response.finish_reason,
+            prompt_hash=prompt_hash(request.messages[0].content if request.messages else ""),
+            prompt_preview=redact_pii(request.messages[0].content if request.messages else "")[:120],
+        )
         return response
 
     async def stream(self, request: ChatRequest) -> AsyncIterator[ChatDelta]:
-        """Генерирует дельты и финальный usage"""
+        start_time = time.perf_counter()
         model = request.model or self.settings.openai.default_model
         try:
             stream = await self.openai.chat.completions.create(
@@ -89,9 +110,22 @@ class LLMService:
                 if chunk.choices and chunk.choices[0].delta.content:
                     yield ChatDelta(content=chunk.choices[0].delta.content)
                 if chunk.usage:
-                    yield ChatDelta(usage=Usage(**chunk.usage.model_dump()))
+                    usage = chunk.usage
+                    latency_ms = (time.perf_counter() - start_time) * 1000
+                    logger.info(
+                        "llm_request_completed",
+                        model=model,
+                        cached=False,
+                        input_tokens=usage.prompt_tokens,
+                        output_tokens=usage.completion_tokens,
+                        total_tokens=usage.total_tokens,
+                        latency_ms=latency_ms,
+                        finish_reason="stop",   # в стриме может не быть finish_reason, ставим по умолчанию
+                        prompt_hash=prompt_hash(request.messages[0].content if request.messages else ""),
+                        prompt_preview=redact_pii(request.messages[0].content if request.messages else "")[:120],
+                    )
+                    yield ChatDelta(usage=Usage(**usage.model_dump()))
         except Exception as e:
-            # Та же обработка ошибок
             error_type = type(e).__name__
             if "RateLimit" in error_type:
                 raise LLMRateLimitError(str(e))

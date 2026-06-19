@@ -1,6 +1,5 @@
 import time
 import httpx
-import logging
 import uuid
 from contextlib import asynccontextmanager
 
@@ -10,23 +9,29 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from openai import AsyncOpenAI
 from redis.asyncio import Redis
+from structlog.contextvars import bind_contextvars, clear_contextvars
+import structlog
 
 from app.core.config import get_settings
 from app.core.exceptions import LLMError, LLMRateLimitError, LLMTimeoutError, LLMAuthError
 from app.routers import chat, health, models
+from app.observability.tracing import setup_tracing
+from app.observability.logging import setup_logging
 
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("llm-service")
+# --- 1. Настройка structlog (до создания приложения) ---
+setup_logging()
+logger = structlog.get_logger()
 
 settings = get_settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up...")
+    # --- 2. Инициализация трейсинга (ДО создания клиента OpenAI) ---
+    setup_tracing(project_name="diploma-fastapi")
+    logger.info("Tracing initialized")
 
-    # Правильный параметр — proxy (единственное число)
+    # --- 3. Клиент OpenAI (как было) ---
     proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
     http_client = httpx.AsyncClient(proxy=proxy_url)
 
@@ -38,7 +43,7 @@ async def lifespan(app: FastAPI):
         max_retries=settings.openai.max_retries,
     )
 
-    # ... остальной код (Redis) ...
+    # --- 4. Redis (как было) ---
     try:
         app.state.redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
         await app.state.redis_client.ping()
@@ -49,21 +54,22 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    # Shutdown
+    # --- 5. Shutdown ---
     await app.state.openai_client.close()
     if app.state.redis_client:
         await app.state.redis_client.close()
     await http_client.aclose()
     logger.info("Shutdown complete")
 
+
 app = FastAPI(
     title="LLM Service",
-    description="Асинхронный сервис для работы с LLM (OpenAI/polza.ai) с кешированием и стримингом",
+    description="Асинхронный сервис для работы с LLM (OpenAI/polza.ai) с кешированием, стримингом и observability",
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# CORS middleware
+# --- 6. CORS middleware (как было) ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -73,23 +79,41 @@ app.add_middleware(
     expose_headers=["X-Request-ID"],
 )
 
-# Middleware для логирования и request_id
+# --- 7. НОВОЕ: Middleware для structlog с request_id ---
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
-    request.state.request_id = request_id
-    start_time = time.perf_counter()
-    response = await call_next(request)
-    duration_ms = (time.perf_counter() - start_time) * 1000
-    logger.info(
-        f"request_id={request_id} method={request.method} path={request.url.path} "
-        f"status={response.status_code} duration_ms={duration_ms:.2f}"
+    # Генерируем или берём request_id из заголовка
+    request_id = request.headers.get("X-Request-ID", uuid.uuid4().hex[:12])
+    
+    # Привязываем контекстные переменные для structlog
+    bind_contextvars(
+        request_id=request_id,
+        method=request.method,
+        path=request.url.path,
+        client_ip=request.client.host if request.client else None,
     )
-    response.headers["X-Request-ID"] = request_id
-    return response
+    
+    start_time = time.perf_counter()
+    try:
+        response = await call_next(request)
+        duration_ms = (time.perf_counter() - start_time) * 1000
+        
+        # Логируем HTTP-запрос в структурированном формате
+        logger.info(
+            "http_request",
+            status=response.status_code,
+            duration_ms=duration_ms,
+        )
+        
+        # Добавляем заголовок в ответ
+        response.headers["X-Request-ID"] = request_id
+        return response
+    finally:
+        # Очищаем контекст после запроса, чтобы данные не "перетекали"
+        clear_contextvars()
 
 
-# Обработчики исключений
+# --- 8. Обработчики исключений (как были) ---
 @app.exception_handler(LLMRateLimitError)
 async def llm_rate_limit_handler(request: Request, exc: LLMRateLimitError):
     return JSONResponse(
@@ -134,7 +158,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-# Подключаем роутеры
+# --- 9. Подключаем роутеры (как было) ---
 app.include_router(chat.router)
 app.include_router(health.router)
 app.include_router(models.router)

@@ -13,6 +13,17 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    ports:
+      - "6006:6006"   # UI
+      - "4317:4317"   # OTLP gRPC (для отправки трейсов)
+    environment:
+      PHOENIX_WORKING_DIR: /data
+    volumes:
+      - phoenix-data:/data
+    restart: unless-stopped
+
   app:
     build: .
     ports:
@@ -21,9 +32,12 @@ services:
       - .env
     environment:
       REDIS_URL: redis://redis:6379/0
+      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:4317   # <-- как app будет находить Phoenix
     depends_on:
       redis:
         condition: service_healthy
+      phoenix:
+        condition: service_started   # ждём, пока Phoenix запустится
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 15s
@@ -34,3 +48,4 @@ services:
 
 volumes:
   redis_data:
+  phoenix-data:   

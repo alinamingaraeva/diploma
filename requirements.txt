@@ -3,3 +3,9 @@ uvicorn>=0.30.0
 openai>=2.0.0
 pydantic-settings>=2.0.0
 redis>=5.0.0  # опционально, можно закомментировать
+httpx
+arize-phoenix
+openinference-instrumentation-openai
+structlog
+presidio-analyzer
+presidio-anonymizer
