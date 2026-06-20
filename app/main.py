@@ -1,6 +1,7 @@
 import time
 import httpx
 import uuid
+import secrets
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
@@ -42,7 +43,8 @@ async def lifespan(app: FastAPI):
         timeout=settings.openai.request_timeout,
         max_retries=settings.openai.max_retries,
     )
-
+    app.state.canary = secrets.token_hex(4)
+    logger.info(f"Canary set: {app.state.canary}")
     # --- 4. Redis (как было) ---
     try:
         app.state.redis_client = Redis.from_url(settings.redis_url, decode_responses=True)
@@ -78,7 +80,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-Request-ID"],
 )
-
 # --- 7. НОВОЕ: Middleware для structlog с request_id ---
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
