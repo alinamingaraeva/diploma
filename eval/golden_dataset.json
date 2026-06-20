@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "faq_001",
+      "question": "Что такое Docker?",
+      "expected_answer": "Docker — это платформа для контейнеризации приложений, которая позволяет упаковывать код и зависимости в изолированные контейнеры.",
+      "expected_keywords": ["контейнеризация", "изоляция", "платформа", "упаковка"],
+      "category": "technical",
+      "difficulty": "easy",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_002",
+      "question": "Как работает кеширование в Redis?",
+      "expected_answer": "Redis хранит данные в оперативной памяти в виде ключ-значение, обеспечивая быстрый доступ к кешированным данным.",
+      "expected_keywords": ["оперативная память", "ключ-значение", "быстрый доступ", "кеш"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_003",
+      "question": "Какие преимущества даёт использование асинхронного Python (asyncio)?",
+      "expected_answer": "Asyncio позволяет выполнять множество операций ввода-вывода конкурентно, не блокируя основной поток, что повышает производительность веб-приложений.",
+      "expected_keywords": ["конкурентность", "неблокирующий", "ввод-вывод", "производительность"],
+      "category": "technical",
+      "difficulty": "hard",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_004",
+      "question": "Зачем нужны healthcheck-и в Docker?",
+      "expected_answer": "Healthcheck-и проверяют, работает ли сервис внутри контейнера, и позволяют Docker Orchestrator перезапускать неработающие сервисы.",
+      "expected_keywords": ["проверка состояния", "здоровье", "перезапуск", "оркестратор"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_005",
+      "question": "Что такое PII и зачем его маскировать?",
+      "expected_answer": "PII (персональные данные) — это информация, которая может идентифицировать человека. Маскировка нужна для защиты данных и соблюдения законов о приватности.",
+      "expected_keywords": ["персональные данные", "маскировка", "приватность", "защита"],
+      "category": "security",
+      "difficulty": "easy",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_006",
+      "question": "Как защитить API-ключи в приложении?",
+      "expected_answer": "API-ключи должны храниться в переменных окружения (файл .env), не в коде, и не попадать в систему контроля версий.",
+      "expected_keywords": ["переменные окружения", ".env", "безопасность", "секреты"],
+      "category": "security",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_007",
+      "question": "Что такое трассировка (tracing) и зачем она нужна?",
+      "expected_answer": "Трассировка позволяет отслеживать путь выполнения запроса через систему, видеть время выполнения и находить узкие места.",
+      "expected_keywords": ["отслеживание", "запросы", "время выполнения", "дебаг"],
+      "category": "technical",
+      "difficulty": "hard",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_008",
+      "question": "Как работает G-Eval при оценке ответов LLM?",
+      "expected_answer": "G-Eval использует саму LLM как судью: сначала генерирует оценку с объяснением, затем выставляет числовой балл по критериям.",
+      "expected_keywords": ["LLM-as-judge", "оценка", "релевантность", "объяснение"],
+      "category": "technical",
+      "difficulty": "hard",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_009",
+      "question": "Чем отличаются Liveness и Readiness пробы?",
+      "expected_answer": "Liveness показывает, жив ли процесс (/health), а Readiness — готов ли сервис принимать трафик (/ready), проверяя зависимости.",
+      "expected_keywords": ["liveness", "readiness", "состояние", "зависимости"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_010",
+      "question": "Что такое структурированное логирование и в чём его польза?",
+      "expected_answer": "Структурированное логирование (например, JSON) позволяет легко парсить и анализировать логи, добавлять контекст (request_id) и автоматизировать мониторинг.",
+      "expected_keywords": ["JSON", "контекст", "request_id", "анализ"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_011",
+      "question": "Как сделать так, чтобы бот не раскрывал личную информацию?",
+      "expected_answer": "Использовать маскировку PII в логах, не передавать данные в промпт без необходимости, и настроить фильтрацию на уровне приложения.",
+      "expected_keywords": ["маскировка", "PII", "безопасность", "фильтрация"],
+      "category": "security",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_012",
+      "question": "Зачем в кеше Redis хранить ответы LLM?",
+      "expected_answer": "Кеширование позволяет не повторять дорогие вызовы API для одинаковых запросов, снижая задержку и стоимость.",
+      "expected_keywords": ["кеш", "экономия", "задержка", "стоимость"],
+      "category": "technical",
+      "difficulty": "easy",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_013",
+      "question": "Что такое multi-stage Dockerfile и зачем он нужен?",
+      "expected_answer": "Multi-stage позволяет отделить сборку зависимостей от финального образа, чтобы уменьшить его размер и улучшить безопасность.",
+      "expected_keywords": ["multi-stage", "сборка", "размер образа", "безопасность"],
+      "category": "technical",
+      "difficulty": "hard",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_014",
+      "question": "Как в Python правильно обрабатывать ошибки в асинхронном коде?",
+      "expected_answer": "Использовать try/except внутри async-функций, а также обработчики исключений в FastAPI (exception_handlers), чтобы возвращать понятные HTTP-коды.",
+      "expected_keywords": ["try/except", "exception_handler", "асинхронно", "ошибки"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_015",
+      "question": "Что такое Observability и из каких столпов она состоит?",
+      "expected_answer": "Observability — это способность понимать работу системы извне. Состоит из трёх столпов: логи, метрики и трассировки.",
+      "expected_keywords": ["логи", "метрики", "трассировка", "наблюдаемость"],
+      "category": "technical",
+      "difficulty": "hard",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_016",
+      "question": "В чём разница между фикстурами и моками в pytest?",
+      "expected_answer": "Фикстуры — это подготовка окружения (данные, объекты), а моки — это подмена зависимостей, чтобы изолировать тестируемый модуль.",
+      "expected_keywords": ["фикстуры", "моки", "pytest", "зависимости"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_017",
+      "question": "Как проверить, что приложение готово принимать запросы после перезагрузки?",
+      "expected_answer": "Использовать healthcheck-и: /health (liveness) и /ready (readiness). Второй проверяет доступность Redis и других зависимостей.",
+      "expected_keywords": ["liveness", "readiness", "healthcheck", "зависимости"],
+      "category": "technical",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_018",
+      "question": "Зачем использовать structlog вместо стандартного logging?",
+      "expected_answer": "structlog даёт структурированные JSON-логи с контекстом (request_id), что упрощает поиск и анализ в системах мониторинга.",
+      "expected_keywords": ["structlog", "JSON", "request_id", "контекст"],
+      "category": "technical",
+      "difficulty": "easy",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_019",
+      "question": "Что такое золотой датасет (golden dataset) и зачем он нужен?",
+      "expected_answer": "Это набор эталонных вопросов-ответов для оценки качества LLM. Он позволяет объективно измерять, стала ли модель лучше после изменений.",
+      "expected_keywords": ["эталон", "оценка", "качество", "регрессии"],
+      "category": "evaluation",
+      "difficulty": "medium",
+      "source": "synthetic"
+    },
+    {
+      "id": "faq_020",
+      "question": "Как использовать LLM-as-Judge для оценки ответов бота?",
+      "expected_answer": "Отправить в сильную модель (GPT-5) вопрос, ответ бота и эталон, запросить оценку с объяснением (reasoning) и числовым баллом по критериям.",
+      "expected_keywords": ["LLM-as-Judge", "оценка", "критерии", "reasoning"],
+      "category": "evaluation",
+      "difficulty": "hard",
+      "source": "synthetic"
+    }
+  ]
+}
