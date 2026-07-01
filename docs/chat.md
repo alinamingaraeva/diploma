@@ -1,15 +1,9 @@
 # Архитектура чата
 
+
 ## Mermaid-диаграмма
 
-```mermaid
-graph LR
-    Client[Клиент] -->|POST /chats/id/messages| Routes[Routes]
-    Routes --> Service[ChatService]
-    Service --> Repo[ChatRepository]
-    Service --> LLM[LLM API]
-    Repo --> JSON[JSON Storage]
-    Repo --> PG[PostgreSQL]
+![Архитектура чата](./architecture.png)
 
 Стратегия контекста
 Выбрана стратегия Sliding Window (скользящее окно).
