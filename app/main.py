@@ -16,6 +16,7 @@ import structlog
 from app.core.config import get_settings
 from app.core.exceptions import LLMError, LLMRateLimitError, LLMTimeoutError, LLMAuthError
 from app.routers import chat, health, models
+from app.chat.routes import router as chat_router
 from app.observability.tracing import setup_tracing
 from app.observability.logging import setup_logging
 
@@ -34,7 +35,7 @@ async def lifespan(app: FastAPI):
 
     # --- 3. Клиент OpenAI (как было) ---
     proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
-    http_client = httpx.AsyncClient(proxy=proxy_url)
+    http_client = httpx.AsyncClient(proxy=proxy_url, trust_env=False)
 
     app.state.openai_client = AsyncOpenAI(
         api_key=settings.openai.api_key.get_secret_value(),
@@ -163,3 +164,4 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(chat.router)
 app.include_router(health.router)
 app.include_router(models.router)
+app.include_router(chat_router)

@@ -17,11 +17,28 @@ services:
     image: arizephoenix/phoenix:latest
     ports:
       - "6006:6006"   # UI
-      - "4317:4317"   # OTLP gRPC (для отправки трейсов)
+      - "4317:4317"   # OTLP gRPC
     environment:
       PHOENIX_WORKING_DIR: /data
     volumes:
       - phoenix-data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: chat_user
+      POSTGRES_PASSWORD: chat_pass
+      POSTGRES_DB: chat_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chat_user -d chat_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   app:
@@ -32,12 +49,14 @@ services:
       - .env
     environment:
       REDIS_URL: redis://redis:6379/0
-      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:4317   # <-- как app будет находить Phoenix
+      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:4317
     depends_on:
       redis:
         condition: service_healthy
       phoenix:
-        condition: service_started   # ждём, пока Phoenix запустится
+        condition: service_started
+      postgres:
+        condition: service_healthy   # опционально, но полезно
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 15s
@@ -48,4 +67,5 @@ services:
 
 volumes:
   redis_data:
-  phoenix-data:   
+  phoenix-data:
+  postgres_data:

@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import List
+from typing import List, Literal
 from pathlib import Path
 from pydantic import SecretStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -36,6 +37,13 @@ class Settings(BaseSettings):
     
     # Логирование
     log_level: str = "INFO"
+    chat_repository: Literal["json", "postgres"] = "json"
+    chat_storage_dir: Path = Path("./var/chats")
+    chat_context_strategy: Literal["sliding", "hybrid"] = "sliding"
+    chat_context_window: int = 10
+    model_context_window: int = 128000
+    response_tokens: int = 4096
+    database_url: str = "postgresql+asyncpg://chat_user:chat_pass@localhost:5432/chat_db"
 
 
 @lru_cache
