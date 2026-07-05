@@ -1,12 +1,12 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ChatAction
 from bot.services.backend_client import BackendClient
+from bot.keyboards.inline import feedback_kb
 import uuid
 
 router = Router()
 
-# ---- Кнопки главного меню (остаются без изменений) ----
+# ---- Кнопки главного меню ----
 
 @router.message(F.text == "🎫 Купить билет")
 async def tickets_info(message: types.Message):
@@ -57,13 +57,12 @@ async def ask_question_prompt(message: types.Message, state: FSMContext):
         "Я постараюсь найти ответ на основе информации с сайта."
     )
 
-# ---- Обработка свободного текста (с sendMessageDraft) ----
+# ---- Обработка свободного текста (с edit_message_text) ----
 
 @router.message(F.text & ~F.text.startswith("/") & F.text.not_in([
     "🎫 Купить билет", "📜 Правила посещения", "🕐 Часы работы", "📅 Афиша", "❓ Задать вопрос"
 ]))
 async def handle_free_text(message: types.Message, backend: BackendClient, state: FSMContext):
-    # Проверяем, не находится ли пользователь в FSM-сценарии
     current_state = await state.get_state()
     if current_state:
         return
@@ -71,41 +70,22 @@ async def handle_free_text(message: types.Message, backend: BackendClient, state
     owner_id = str(message.from_user.id)
     chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
 
-    # Показываем индикатор "печатает"
-    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
-
-    draft_id = uuid.uuid4().int & 0xFFFFFFFF
+    sent_msg = await message.answer("⌛ Думаю...")
     buffer = ""
-
-    # Создаём пустой черновик
-    await message.bot.send_message_draft(
-        chat_id=message.chat.id,
-        text="",
-        draft_id=draft_id,
-    )
-
     try:
         async for chunk in backend.send_message(chat_id, message.text):
             buffer += chunk
-            if buffer.strip():
-                await message.bot.send_message_draft(
-                    chat_id=message.chat.id,
-                    text=buffer,
-                    draft_id=draft_id,
-                )
-        # Фиксируем финальный ответ
+            await sent_msg.edit_text(buffer + " ...")
         if buffer:
-            await message.bot.send_message(
-                chat_id=message.chat.id,
-                text=buffer,
-            )
+            # Убираем "..." и отправляем финальный ответ с фидбеком
+            feedback_id = f"{chat_id}_{uuid.uuid4().int & 0xFFFFFFFF}"
+            await sent_msg.edit_text(buffer, reply_markup=feedback_kb(feedback_id))
         else:
-            await message.bot.send_message(
-                chat_id=message.chat.id,
-                text="⚠️ Ответ не получен.",
-            )
+            await sent_msg.edit_text("⚠️ Ответ не получен.")
     except Exception as e:
-        await message.bot.send_message(
-            chat_id=message.chat.id,
-            text=f"❌ Ошибка: {str(e)}",
-        )
+    error_text = str(e)
+    print(f"ERROR: {error_text}")  # для отладки
+    if "403" in error_text or "moderation_blocked" in error_text:
+        await sent_msg.edit_text("⛔️ Ваше сообщение заблокировано модерацией.")
+    else:
+        await sent_msg.edit_text(f"❌ Ошибка: {error_text}")

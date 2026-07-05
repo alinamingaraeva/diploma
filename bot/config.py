@@ -11,6 +11,7 @@ class BotSettings(BaseSettings):
     proxy: Optional[str] = None
     bot_api_port: int = 9000
     internal_token: str = "secret-internal-token"  # обязательно переопределить в .env
+    admin_token: str = "secret-admin-token"
 
 def get_bot_settings() -> BotSettings:
     return BotSettings()

@@ -8,6 +8,7 @@ from bot.config import get_bot_settings
 from bot.services.backend_client import BackendClient
 from bot.handlers import commands, text, fsm, media
 from bot.web import build_api
+from bot.handlers import commands, text, fsm, media, feedback
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,13 +24,18 @@ async def main():
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
-    backend_client = BackendClient(base_url=settings.backend_url, timeout=settings.backend_timeout)
+    backend_client = BackendClient(
+    base_url=settings.backend_url,
+    admin_token=settings.admin_token,  # <-- добавьте эту строку
+    timeout=settings.backend_timeout
+    )
     dp["backend"] = backend_client
 
     dp.include_router(commands.router)
     dp.include_router(text.router)
     dp.include_router(fsm.router)
     dp.include_router(media.router)
+    dp.include_router(feedback.router)
 
     # Запускаем API для /notify
     api = build_api(bot, settings.internal_token)

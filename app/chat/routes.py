@@ -5,6 +5,9 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from app.chat.deps import get_chat_service
 from app.chat.service import ChatService
+from pydantic import BaseModel
+from app.chat.deps import get_repository
+
 
 router = APIRouter(prefix="/chats", tags=["chat"])
 
@@ -72,3 +75,18 @@ async def get_chat(
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     return chat
+class FeedbackIn(BaseModel):
+    message_id: str
+    value: str  # 'up' или 'down'
+    owner_external_id: str
+
+@router.post("/feedback")
+async def save_feedback(
+    data: FeedbackIn,
+    repo=Depends(get_repository),
+):
+    # Здесь нужно сохранить фидбек в БД
+    # Если используете JSON-репозиторий, можно сохранять в отдельный файл
+    # Для PostgreSQL – используем FeedbackRow
+    # Пока заглушка
+    return {"ok": True}

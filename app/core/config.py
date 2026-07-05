@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://chat_user:chat_pass@localhost:5432/chat_db"
     bot_url: str = "http://bot:9000"  # адрес бота внутри Docker
     internal_token: str = "cYMvMSr98HgDPpOR5UzMskSHDO-W4SP-WPtPfPRFIKU"  # должно совпадать с токеном бота
+    admin_token: str = "secret-admin-token"
 
 
 @lru_cache
