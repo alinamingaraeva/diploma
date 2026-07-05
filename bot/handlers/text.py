@@ -1,8 +1,12 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
+from aiogram.enums import ChatAction
 from bot.services.backend_client import BackendClient
+import uuid
 
 router = Router()
+
+# ---- Кнопки главного меню (остаются без изменений) ----
 
 @router.message(F.text == "🎫 Купить билет")
 async def tickets_info(message: types.Message):
@@ -41,7 +45,7 @@ async def hours_info(message: types.Message):
 async def poster_info(message: types.Message):
     text = (
         "📅 Афиша мероприятий и событий Казанского Кремля:\n"
-        "https://kazan-kremlin.ru/afisha"
+        "https://kazan-kremlin.ru/sobytiya/"
     )
     await message.answer(text)
 
@@ -53,26 +57,55 @@ async def ask_question_prompt(message: types.Message, state: FSMContext):
         "Я постараюсь найти ответ на основе информации с сайта."
     )
 
+# ---- Обработка свободного текста (с sendMessageDraft) ----
+
 @router.message(F.text & ~F.text.startswith("/") & F.text.not_in([
     "🎫 Купить билет", "📜 Правила посещения", "🕐 Часы работы", "📅 Афиша", "❓ Задать вопрос"
 ]))
 async def handle_free_text(message: types.Message, backend: BackendClient, state: FSMContext):
-    # Проверяем, не находится ли пользователь в FSM-сценарии (об этом позаботится fsm.py)
+    # Проверяем, не находится ли пользователь в FSM-сценарии
     current_state = await state.get_state()
     if current_state:
         return
 
     owner_id = str(message.from_user.id)
     chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
-    
-    sent_msg = await message.answer("⌛ Ищу ответ...")
+
+    # Показываем индикатор "печатает"
+    await message.bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+
+    draft_id = uuid.uuid4().int & 0xFFFFFFFF
     buffer = ""
+
+    # Создаём пустой черновик
+    await message.bot.send_message_draft(
+        chat_id=message.chat.id,
+        text="",
+        draft_id=draft_id,
+    )
+
     try:
         async for chunk in backend.send_message(chat_id, message.text):
             buffer += chunk
-            await sent_msg.edit_text(buffer + " ...")
-        await sent_msg.edit_text(buffer)
+            if buffer.strip():
+                await message.bot.send_message_draft(
+                    chat_id=message.chat.id,
+                    text=buffer,
+                    draft_id=draft_id,
+                )
+        # Фиксируем финальный ответ
+        if buffer:
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text=buffer,
+            )
+        else:
+            await message.bot.send_message(
+                chat_id=message.chat.id,
+                text="⚠️ Ответ не получен.",
+            )
     except Exception as e:
-        await sent_msg.edit_text(f"❌ Ошибка: {str(e)}")
-    finally:
-        await state.clear()  # сбрасываем флаг, если был
+        await message.bot.send_message(
+            chat_id=message.chat.id,
+            text=f"❌ Ошибка: {str(e)}",
+        )
