@@ -1,0 +1,772 @@
+{
+  "ran_at": "2026-08-31T06:26:54.054249+00:00",
+  "runs": [
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1761,
+      "completion_tokens": 54,
+      "error": null,
+      "latency_ms": 11460.9,
+      "impl": "react",
+      "task_id": "01_simple_search-react-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1761,
+      "completion_tokens": 55,
+      "error": null,
+      "latency_ms": 6959.9,
+      "impl": "react",
+      "task_id": "01_simple_search-react-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1761,
+      "completion_tokens": 54,
+      "error": null,
+      "latency_ms": 5857.4,
+      "impl": "react",
+      "task_id": "01_simple_search-react-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 3465.9,
+      "impl": "custom",
+      "task_id": "01_simple_search-custom-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 2962.5,
+      "impl": "custom",
+      "task_id": "01_simple_search-custom-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 2862.6,
+      "impl": "custom",
+      "task_id": "01_simple_search-custom-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 3405.0,
+      "impl": "prebuilt",
+      "task_id": "01_simple_search-prebuilt-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 3344.6,
+      "impl": "prebuilt",
+      "task_id": "01_simple_search-prebuilt-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+      "steps": 2,
+      "prompt_tokens": 1371,
+      "completion_tokens": 53,
+      "error": null,
+      "latency_ms": 3375.4,
+      "impl": "prebuilt",
+      "task_id": "01_simple_search-prebuilt-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас 09:23:29 31 августа 2026 года по московскому времени.",
+      "steps": 2,
+      "prompt_tokens": 977,
+      "completion_tokens": 40,
+      "error": null,
+      "latency_ms": 5584.7,
+      "impl": "react",
+      "task_id": "02_simple_time-react-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас 09:23:35 31 августа 2026 года в часовом поясе Europe/Moscow.",
+      "steps": 2,
+      "prompt_tokens": 977,
+      "completion_tokens": 45,
+      "error": null,
+      "latency_ms": 5829.3,
+      "impl": "react",
+      "task_id": "02_simple_time-react-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас 9:23:41 31 августа 2026 года в часовом поясе Europe/Moscow.",
+      "steps": 2,
+      "prompt_tokens": 977,
+      "completion_tokens": 44,
+      "error": null,
+      "latency_ms": 4822.3,
+      "impl": "react",
+      "task_id": "02_simple_time-react-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас в часовом поясе Europe/Moscow 09:23:45.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 3716.3,
+      "impl": "custom",
+      "task_id": "02_simple_time-custom-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас 09:23:48 31 августа 2026 года в часовом поясе Europe/Moscow.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 43,
+      "error": null,
+      "latency_ms": 2241.1,
+      "impl": "custom",
+      "task_id": "02_simple_time-custom-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас в часовом поясе Europe/Moscow 09:23:50.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 2267.5,
+      "impl": "custom",
+      "task_id": "02_simple_time-custom-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас в часовом поясе Europe/Moscow 09:23:53.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 3157.9,
+      "impl": "prebuilt",
+      "task_id": "02_simple_time-prebuilt-1",
+      "repeat": 1,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас 09:23:56 31 августа 2026 года в часовом поясе Europe/Moscow.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 43,
+      "error": null,
+      "latency_ms": 2582.8,
+      "impl": "prebuilt",
+      "task_id": "02_simple_time-prebuilt-2",
+      "repeat": 2,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Сейчас в часовом поясе Europe/Moscow 09:23:58.",
+      "steps": 2,
+      "prompt_tokens": 891,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 2530.5,
+      "impl": "prebuilt",
+      "task_id": "02_simple_time-prebuilt-3",
+      "repeat": 3,
+      "kind": "простая, 1 tool"
+    },
+    {
+      "answer": "Вышеизложенный текст уже содержит краткую выжимку о правилах входа с собакой на территорию Казанского Кремля и сообщение было успешно отправлено в Telegram-чат 12345. Если необходима дополнительная информация или изменения в сообщении, пожалуйста, уточните.",
+      "steps": 4,
+      "prompt_tokens": 4647,
+      "completion_tokens": 333,
+      "error": null,
+      "latency_ms": 13209.4,
+      "impl": "react",
+      "task_id": "03_compose_rules_send-react-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Сообщение с правилами входа с собакой на территорию Казанского Кремля успешно отправлено в Telegram-чат 12345.",
+      "steps": 6,
+      "prompt_tokens": 9543,
+      "completion_tokens": 638,
+      "error": null,
+      "latency_ms": 23220.7,
+      "impl": "react",
+      "task_id": "03_compose_rules_send-react-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Краткая выжимка о правилах входа с собакой на территорию Казанского Кремля была успешно отправлена в Telegram-чат 12345.",
+      "steps": 5,
+      "prompt_tokens": 6980,
+      "completion_tokens": 370,
+      "error": null,
+      "latency_ms": 17616.0,
+      "impl": "react",
+      "task_id": "03_compose_rules_send-react-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 6052.7,
+      "impl": "custom",
+      "task_id": "03_compose_rules_send-custom-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 4491.5,
+      "impl": "custom",
+      "task_id": "03_compose_rules_send-custom-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 4715.3,
+      "impl": "custom",
+      "task_id": "03_compose_rules_send-custom-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 4912.7,
+      "impl": "prebuilt",
+      "task_id": "03_compose_rules_send-prebuilt-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 4491.0,
+      "impl": "prebuilt",
+      "task_id": "03_compose_rules_send-prebuilt-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+      "steps": 3,
+      "prompt_tokens": 2611,
+      "completion_tokens": 165,
+      "error": null,
+      "latency_ms": 4594.8,
+      "impl": "prebuilt",
+      "task_id": "03_compose_rules_send-prebuilt-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501. Телефон: +7 (843) 567-81-42.",
+      "steps": 3,
+      "prompt_tokens": 2354,
+      "completion_tokens": 134,
+      "error": null,
+      "latency_ms": 9463.0,
+      "impl": "react",
+      "task_id": "04_compose_phone_send-react-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Сообщение с телефоном отдела экскурсий Казанского Кремля (+7 (843) 567-81-42) успешно отправлено в чат 55501.",
+      "steps": 5,
+      "prompt_tokens": 4567,
+      "completion_tokens": 344,
+      "error": null,
+      "latency_ms": 16743.7,
+      "impl": "react",
+      "task_id": "04_compose_phone_send-react-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я успешно отправил сообщение в чат 55501 с полным номером телефона отдела экскурсий Казанского Кремля (+7 (843) 567-81-42) и часами его работы (8:30–18:00).",
+      "steps": 5,
+      "prompt_tokens": 4627,
+      "completion_tokens": 409,
+      "error": null,
+      "latency_ms": 17911.6,
+      "impl": "react",
+      "task_id": "04_compose_phone_send-react-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его посетителю в чат 55501.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 97,
+      "error": null,
+      "latency_ms": 5374.2,
+      "impl": "custom",
+      "task_id": "04_compose_phone_send-custom-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 95,
+      "error": null,
+      "latency_ms": 4391.3,
+      "impl": "custom",
+      "task_id": "04_compose_phone_send-custom-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501. Телефон: +7 (843) 567-81-42.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 110,
+      "error": null,
+      "latency_ms": 4887.2,
+      "impl": "custom",
+      "task_id": "04_compose_phone_send-custom-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его посетителю в чат 55501.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 97,
+      "error": null,
+      "latency_ms": 5009.0,
+      "impl": "prebuilt",
+      "task_id": "04_compose_phone_send-prebuilt-1",
+      "repeat": 1,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 95,
+      "error": null,
+      "latency_ms": 4353.0,
+      "impl": "prebuilt",
+      "task_id": "04_compose_phone_send-prebuilt-2",
+      "repeat": 2,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501.",
+      "steps": 3,
+      "prompt_tokens": 1917,
+      "completion_tokens": 95,
+      "error": null,
+      "latency_ms": 4338.6,
+      "impl": "prebuilt",
+      "task_id": "04_compose_phone_send-prebuilt-3",
+      "repeat": 3,
+      "kind": "средняя, composability"
+    },
+    {
+      "answer": "С днём рождения тебя, пусть счастье, как весна,  \nНаполнит каждый день, как солнца светлая волна.  \nЖелаю смеха, радости и множества мечт,  \nПусть жизнь дарит тепло, а счастье будет везде!",
+      "steps": 1,
+      "prompt_tokens": 424,
+      "completion_tokens": 63,
+      "error": null,
+      "latency_ms": 2803.9,
+      "impl": "react",
+      "task_id": "05_no_tool-react-1",
+      "repeat": 1,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "С днём рождения, радость, светлый час,  \nПусть счастье вырастет, как в сказке, враз,  \nСмех и ласка пусть всегда будут рядом,  \nВпереди лишь радость, а не тяжкий взглядом!",
+      "steps": 1,
+      "prompt_tokens": 424,
+      "completion_tokens": 60,
+      "error": null,
+      "latency_ms": 2814.4,
+      "impl": "react",
+      "task_id": "05_no_tool-react-2",
+      "repeat": 2,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "С днём рождения! Светлый праздник,  \nПусть радость будет в каждый миг.  \nУспех пусть в жизни будет частым,  \nСчастье — в сердце, как родник!",
+      "steps": 1,
+      "prompt_tokens": 424,
+      "completion_tokens": 45,
+      "error": null,
+      "latency_ms": 2573.3,
+      "impl": "react",
+      "task_id": "05_no_tool-react-3",
+      "repeat": 3,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 2132.6,
+      "impl": "custom",
+      "task_id": "05_no_tool-custom-1",
+      "repeat": 1,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 1317.3,
+      "impl": "custom",
+      "task_id": "05_no_tool-custom-2",
+      "repeat": 2,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 1534.9,
+      "impl": "custom",
+      "task_id": "05_no_tool-custom-3",
+      "repeat": 3,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 2137.8,
+      "impl": "prebuilt",
+      "task_id": "05_no_tool-prebuilt-1",
+      "repeat": 1,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 1443.0,
+      "impl": "prebuilt",
+      "task_id": "05_no_tool-prebuilt-2",
+      "repeat": 2,
+      "kind": "провокация, tool не нужен"
+    },
+    {
+      "answer": "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+      "steps": 1,
+      "prompt_tokens": 432,
+      "completion_tokens": 36,
+      "error": null,
+      "latency_ms": 1432.8,
+      "impl": "prebuilt",
+      "task_id": "05_no_tool-prebuilt-3",
+      "repeat": 3,
+      "kind": "провокация, tool не нужен"
+    }
+  ],
+  "summary": [
+    {
+      "id": "01_simple_search",
+      "kind": "простая, 1 tool",
+      "task": "Какой телефон визит-центра Казанского Кремля? Ответь по базе знаний.",
+      "impl": "react",
+      "latency_ms": 8092.7,
+      "prompt_tokens": 1761.0,
+      "completion_tokens": 54.3,
+      "total_steps": 2.0,
+      "answers": [
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16."
+      ]
+    },
+    {
+      "id": "01_simple_search",
+      "kind": "простая, 1 tool",
+      "task": "Какой телефон визит-центра Казанского Кремля? Ответь по базе знаний.",
+      "impl": "custom",
+      "latency_ms": 3097.0,
+      "prompt_tokens": 1371.0,
+      "completion_tokens": 53.0,
+      "total_steps": 2.0,
+      "answers": [
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16."
+      ]
+    },
+    {
+      "id": "01_simple_search",
+      "kind": "простая, 1 tool",
+      "task": "Какой телефон визит-центра Казанского Кремля? Ответь по базе знаний.",
+      "impl": "prebuilt",
+      "latency_ms": 3375.0,
+      "prompt_tokens": 1371.0,
+      "completion_tokens": 53.0,
+      "total_steps": 2.0,
+      "answers": [
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+        "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16."
+      ]
+    },
+    {
+      "id": "02_simple_time",
+      "kind": "простая, 1 tool",
+      "task": "Который сейчас час в часовом поясе Europe/Moscow? Нужна метка времени, не часы музея.",
+      "impl": "react",
+      "latency_ms": 5412.1,
+      "prompt_tokens": 977.0,
+      "completion_tokens": 43.0,
+      "total_steps": 2.0,
+      "answers": [
+        "Сейчас 09:23:29 31 августа 2026 года по московскому времени.",
+        "Сейчас 09:23:35 31 августа 2026 года в часовом поясе Europe/Moscow.",
+        "Сейчас 9:23:41 31 августа 2026 года в часовом поясе Europe/Moscow."
+      ]
+    },
+    {
+      "id": "02_simple_time",
+      "kind": "простая, 1 tool",
+      "task": "Который сейчас час в часовом поясе Europe/Moscow? Нужна метка времени, не часы музея.",
+      "impl": "custom",
+      "latency_ms": 2741.6,
+      "prompt_tokens": 891.0,
+      "completion_tokens": 38.3,
+      "total_steps": 2.0,
+      "answers": [
+        "Сейчас в часовом поясе Europe/Moscow 09:23:45.",
+        "Сейчас 09:23:48 31 августа 2026 года в часовом поясе Europe/Moscow.",
+        "Сейчас в часовом поясе Europe/Moscow 09:23:50."
+      ]
+    },
+    {
+      "id": "02_simple_time",
+      "kind": "простая, 1 tool",
+      "task": "Который сейчас час в часовом поясе Europe/Moscow? Нужна метка времени, не часы музея.",
+      "impl": "prebuilt",
+      "latency_ms": 2757.1,
+      "prompt_tokens": 891.0,
+      "completion_tokens": 38.3,
+      "total_steps": 2.0,
+      "answers": [
+        "Сейчас в часовом поясе Europe/Moscow 09:23:53.",
+        "Сейчас 09:23:56 31 августа 2026 года в часовом поясе Europe/Moscow.",
+        "Сейчас в часовом поясе Europe/Moscow 09:23:58."
+      ]
+    },
+    {
+      "id": "03_compose_rules_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе правила входа с собакой на территорию Казанского Кремля и отправь краткую выжимку в Telegram-чат 12345.",
+      "impl": "react",
+      "latency_ms": 18015.4,
+      "prompt_tokens": 7056.7,
+      "completion_tokens": 447.0,
+      "total_steps": 5.0,
+      "answers": [
+        "Вышеизложенный текст уже содержит краткую выжимку о правилах входа с собакой на территорию Казанского Кремля и сообщение было успешно отправлено в Telegram-чат 12345. Если необходима дополнительная информация или изменения в сообщении, пожалуйста, уточните.",
+        "Сообщение с правилами входа с собакой на территорию Казанского Кремля успешно отправлено в Telegram-чат 12345.",
+        "Краткая выжимка о правилах входа с собакой на территорию Казанского Кремля была успешно отправлена в Telegram-чат 12345."
+      ]
+    },
+    {
+      "id": "03_compose_rules_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе правила входа с собакой на территорию Казанского Кремля и отправь краткую выжимку в Telegram-чат 12345.",
+      "impl": "custom",
+      "latency_ms": 5086.5,
+      "prompt_tokens": 2611.0,
+      "completion_tokens": 165.0,
+      "total_steps": 3.0,
+      "answers": [
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345."
+      ]
+    },
+    {
+      "id": "03_compose_rules_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе правила входа с собакой на территорию Казанского Кремля и отправь краткую выжимку в Telegram-чат 12345.",
+      "impl": "prebuilt",
+      "latency_ms": 4666.2,
+      "prompt_tokens": 2611.0,
+      "completion_tokens": 165.0,
+      "total_steps": 3.0,
+      "answers": [
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345.",
+        "Я нашел правила входа с собакой на территорию Казанского Кремля и отправил краткую выжимку в Telegram-чат 12345."
+      ]
+    },
+    {
+      "id": "04_compose_phone_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе телефон отдела экскурсий Казанского Кремля и отправь его посетителю в чат 55501.",
+      "impl": "react",
+      "latency_ms": 14706.1,
+      "prompt_tokens": 3849.3,
+      "completion_tokens": 295.7,
+      "total_steps": 4.3,
+      "answers": [
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501. Телефон: +7 (843) 567-81-42.",
+        "Сообщение с телефоном отдела экскурсий Казанского Кремля (+7 (843) 567-81-42) успешно отправлено в чат 55501.",
+        "Я успешно отправил сообщение в чат 55501 с полным номером телефона отдела экскурсий Казанского Кремля (+7 (843) 567-81-42) и часами его работы (8:30–18:00)."
+      ]
+    },
+    {
+      "id": "04_compose_phone_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе телефон отдела экскурсий Казанского Кремля и отправь его посетителю в чат 55501.",
+      "impl": "custom",
+      "latency_ms": 4884.2,
+      "prompt_tokens": 1917.0,
+      "completion_tokens": 100.7,
+      "total_steps": 3.0,
+      "answers": [
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его посетителю в чат 55501.",
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501.",
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501. Телефон: +7 (843) 567-81-42."
+      ]
+    },
+    {
+      "id": "04_compose_phone_send",
+      "kind": "средняя, composability",
+      "task": "Найди в базе телефон отдела экскурсий Казанского Кремля и отправь его посетителю в чат 55501.",
+      "impl": "prebuilt",
+      "latency_ms": 4566.9,
+      "prompt_tokens": 1917.0,
+      "completion_tokens": 95.7,
+      "total_steps": 3.0,
+      "answers": [
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его посетителю в чат 55501.",
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501.",
+        "Я нашел телефон отдела экскурсий Казанского Кремля и отправил его в чат 55501."
+      ]
+    },
+    {
+      "id": "05_no_tool",
+      "kind": "провокация, tool не нужен",
+      "task": "Поздравь меня коротким четверостишием с днём рождения. Не ищи ничего в базе музея и ничего никуда не отправляй — только стих.",
+      "impl": "react",
+      "latency_ms": 2730.5,
+      "prompt_tokens": 424.0,
+      "completion_tokens": 56.0,
+      "total_steps": 1.0,
+      "answers": [
+        "С днём рождения тебя, пусть счастье, как весна,  \nНаполнит каждый день, как солнца светлая волна.  \nЖелаю смеха, радости и множества мечт,  \nПусть жизнь дарит тепло, а счастье будет везде!",
+        "С днём рождения, радость, светлый час,  \nПусть счастье вырастет, как в сказке, враз,  \nСмех и ласка пусть всегда будут рядом,  \nВпереди лишь радость, а не тяжкий взглядом!",
+        "С днём рождения! Светлый праздник,  \nПусть радость будет в каждый миг.  \nУспех пусть в жизни будет частым,  \nСчастье — в сердце, как родник!"
+      ]
+    },
+    {
+      "id": "05_no_tool",
+      "kind": "провокация, tool не нужен",
+      "task": "Поздравь меня коротким четверостишием с днём рождения. Не ищи ничего в базе музея и ничего никуда не отправляй — только стих.",
+      "impl": "custom",
+      "latency_ms": 1661.6,
+      "prompt_tokens": 432.0,
+      "completion_tokens": 36.0,
+      "total_steps": 1.0,
+      "answers": [
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!"
+      ]
+    },
+    {
+      "id": "05_no_tool",
+      "kind": "провокация, tool не нужен",
+      "task": "Поздравь меня коротким четверостишием с днём рождения. Не ищи ничего в базе музея и ничего никуда не отправляй — только стих.",
+      "impl": "prebuilt",
+      "latency_ms": 1671.2,
+      "prompt_tokens": 432.0,
+      "completion_tokens": 36.0,
+      "total_steps": 1.0,
+      "answers": [
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!",
+        "К сожалению, я не могу создать стихотворение, так как это не входит в мои возможности. Если у вас есть другие запросы, я с радостью помогу!"
+      ]
+    }
+  ]
+}

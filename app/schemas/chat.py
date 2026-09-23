@@ -12,6 +12,18 @@ class Message(BaseModel):
     content: str
 
 class ChatRequest(BaseModel):
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "messages": [{"role": "user", "content": "До скольких сегодня работают музеи Казанского Кремля?"}],
+                    "temperature": 0.2,
+                    "max_tokens": 400,
+                }
+            ]
+        }
+    }
+
     messages: List[Message]
     model: Optional[str] = None
     temperature: float = Field(1.0, ge=0, le=2)

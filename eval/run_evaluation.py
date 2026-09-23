@@ -27,8 +27,8 @@ async def get_answer(question: str) -> str:
 
 async def evaluate_with_judge(question: str, answer: str, expected: str, keywords: List[str]) -> Dict[str, Any]:
     """Использует LLM как судью для оценки ответа."""
-    proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
-    http_client = httpx.AsyncClient(proxy=proxy_url)
+    proxy_url = os.getenv("HTTP_PROXY") or None
+    http_client = httpx.AsyncClient(proxy=proxy_url, trust_env=False) if proxy_url else httpx.AsyncClient(trust_env=False)
     try:
         client = AsyncOpenAI(
             api_key=os.getenv("OPENAI__API_KEY"),

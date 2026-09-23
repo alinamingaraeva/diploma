@@ -15,8 +15,11 @@ import structlog
 
 from app.core.config import get_settings
 from app.core.exceptions import LLMError, LLMRateLimitError, LLMTimeoutError, LLMAuthError
-from app.routers import chat, health, models
+from app.services.vector_store import VectorStore
+from app.services.rag import RAGService
+from app.admin.routes import router as admin_router
 from app.chat.routes import router as chat_router
+from app.routers import agent, chat, documents, health, models, rag
 from app.observability.tracing import setup_tracing
 from app.observability.logging import setup_logging
 
@@ -33,9 +36,12 @@ async def lifespan(app: FastAPI):
     setup_tracing(project_name="diploma-fastapi")
     logger.info("Tracing initialized")
 
-    # --- 3. Клиент OpenAI (как было) ---
-    proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
-    http_client = httpx.AsyncClient(proxy=proxy_url, trust_env=False)
+    proxy_url = settings.http_proxy
+    http_client = (
+        httpx.AsyncClient(proxy=proxy_url, trust_env=False)
+        if proxy_url
+        else httpx.AsyncClient(trust_env=False)
+    )
 
     app.state.openai_client = AsyncOpenAI(
         api_key=settings.openai.api_key.get_secret_value(),
@@ -55,19 +61,52 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Redis not available: {e}. Caching disabled.")
         app.state.redis_client = None
 
-    yield
+    app.state.vector_store = VectorStore()
+    try:
+        await app.state.vector_store.ensure_collection()
+        logger.info("Qdrant collection ready", collection=settings.qdrant_collection)
+    except Exception as e:
+        logger.warning(f"Qdrant not available: {e}. Vector search disabled.")
+        await app.state.vector_store.client.close()
+        app.state.vector_store = None
+
+    app.state.rag_service = None
+    rag_service = RAGService()
+    try:
+        rag_service.build()
+        app.state.rag_service = rag_service
+        logger.info("RAG index ready", collection=settings.rag_collection)
+    except Exception as e:
+        rag_service.close()
+        logger.warning(f"RAG not available: {e}")
+
+    from app.services.agent_persistent import agent_lifespan
+
+    try:
+        async with agent_lifespan() as agent_graph:
+            app.state.agent_graph = agent_graph
+            logger.info("agent graph ready", backend=settings.agent_checkpointer)
+            yield
+    except Exception as e:
+        app.state.agent_graph = None
+        logger.warning(f"agent graph not available: {e}")
+        yield
 
     # --- 5. Shutdown ---
     await app.state.openai_client.close()
     if app.state.redis_client:
         await app.state.redis_client.close()
+    if app.state.vector_store:
+        await app.state.vector_store.client.close()
+    if getattr(app.state, "rag_service", None):
+        app.state.rag_service.close()
     await http_client.aclose()
     logger.info("Shutdown complete")
 
 
 app = FastAPI(
-    title="LLM Service",
-    description="Асинхронный сервис для работы с LLM (OpenAI/polza.ai) с кешированием, стримингом и observability",
+    title="ИИ-консультант музеев Казанского Кремля",
+    description="Backend чат-сервиса и Telegram-бота: стриминг, инструменты музея, модерация.",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -164,4 +203,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(chat.router)
 app.include_router(health.router)
 app.include_router(models.router)
+app.include_router(rag.router)
+app.include_router(documents.router)
+app.include_router(agent.router)
+app.include_router(admin_router)
 app.include_router(chat_router)

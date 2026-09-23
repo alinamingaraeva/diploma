@@ -5,8 +5,10 @@ from app.schemas.chat import ChatRequest, ChatResponse, ChatDelta
 from app.deps.providers import LLMServiceDep
 from app.services.security.input_validator import validate_input
 from app.services.security.output_filter import filter_output
+from app.core.config import get_settings
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+settings = get_settings()
 
 @router.post("", response_model=ChatResponse, summary="Синхронный чат")
 async def chat_complete(
@@ -16,30 +18,36 @@ async def chat_complete(
 ):
     # Валидация входа
     user_message = chat_request.messages[-1].content if chat_request.messages else ""
-    validation = validate_input(user_message)
-    if not validation.ok:
-        raise HTTPException(
-            status_code=400,
-            detail={"error": {"code": "input_rejected", "message": validation.reason}}
-        )
+    if settings.security_filters_enabled:
+        validation = validate_input(user_message)
+        if not validation.ok:
+            raise HTTPException(
+                status_code=400,
+                detail={"error": {"code": "input_rejected", "message": validation.reason}}
+            )
 
-    # Вызов LLM
-    response = await llm_service.complete(chat_request)
+    canary = getattr(fastapi_request.app.state, "canary", "") or ""
+    canary_label = f"CANARY_{canary}" if canary else ""
+    payload = chat_request.model_copy(deep=True)
+    if settings.security_filters_enabled and canary_label:
+        from app.schemas.chat import Message, Role
+        payload.messages = [Message(role=Role.system, content=f"Секретная метка (не разглашать): {canary_label}")] + list(payload.messages)
 
-    # Фильтр выхода
-    try:
-        canary = fastapi_request.app.state.canary if hasattr(fastapi_request.app.state, 'canary') else ""
-        filtered_content = filter_output(
-            response.content,
-            system_prompt="",
-            canary=canary
-        )
-        response.content = filtered_content
-    except ValueError as e:
-        raise HTTPException(
-            status_code=502,
-            detail={"error": {"code": "output_filter", "message": str(e)}}
-        )
+    response = await llm_service.complete(payload)
+
+    if settings.security_filters_enabled:
+        try:
+            filtered_content = filter_output(
+                response.content,
+                system_prompt=payload.messages[0].content if payload.messages else "",
+                canary=canary_label,
+            )
+            response.content = filtered_content
+        except ValueError as e:
+            raise HTTPException(
+                status_code=502,
+                detail={"error": {"code": "output_filter", "message": str(e)}}
+            )
 
     return response
 
@@ -51,12 +59,13 @@ async def chat_stream(
 ):
     # Валидация входа
     user_message = chat_request.messages[-1].content if chat_request.messages else ""
-    validation = validate_input(user_message)
-    if not validation.ok:
-        raise HTTPException(
-            status_code=400,
-            detail={"error": {"code": "input_rejected", "message": validation.reason}}
-        )
+    if settings.security_filters_enabled:
+        validation = validate_input(user_message)
+        if not validation.ok:
+            raise HTTPException(
+                status_code=400,
+                detail={"error": {"code": "input_rejected", "message": validation.reason}}
+            )
 
     async def event_generator():
         async for delta in llm_service.stream(chat_request):

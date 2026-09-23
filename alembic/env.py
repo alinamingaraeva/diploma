@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -15,6 +16,17 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
+# Use the same database as the application when Alembic runs in Docker.
+# Alembic needs a synchronous SQLAlchemy driver, while the app uses asyncpg.
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    sync_database_url = (
+        database_url.replace("postgresql+asyncpg://", "postgresql+psycopg://")
+        .replace("postgres+asyncpg://", "postgresql+psycopg://")
+        .replace("postgresql://", "postgresql+psycopg://")
+    )
+    config.set_main_option("sqlalchemy.url", sync_database_url)
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -25,6 +37,19 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
+CHECKPOINT_TABLES = {
+    "checkpoints",
+    "checkpoint_writes",
+    "checkpoint_blobs",
+    "checkpoint_migrations",
+}
+
+
+def include_name(name, type_, parent_names):
+    if type_ == "table" and name in CHECKPOINT_TABLES:
+        return False
+    return True
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -50,6 +75,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_name=include_name,
     )
 
     with context.begin_transaction():
@@ -71,7 +97,9 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            include_name=include_name,
         )
 
         with context.begin_transaction():

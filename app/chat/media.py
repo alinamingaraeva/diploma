@@ -23,8 +23,19 @@ async def media_to_part(media: UploadFile) -> Dict[str, Any]:
     Преобразует загруженный медиафайл в content-part для OpenAI Chat Completions API.
     """
     mime = media.content_type or ""
-    data = await media.read()
     filename = media.filename or "file"
+    if not mime or mime == "application/octet-stream":
+        lower = filename.lower()
+        if lower.endswith((".png", ".jpg", ".jpeg", ".webp", ".gif")):
+            mime = "image/jpeg" if lower.endswith((".jpg", ".jpeg")) else f"image/{lower.rsplit('.', 1)[-1]}"
+        elif lower.endswith(".ogg"):
+            mime = "audio/ogg"
+        elif lower.endswith(".pdf"):
+            mime = "application/pdf"
+        elif lower.endswith(".docx"):
+            mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    data = await media.read()
 
     if mime.startswith("image/"):
         b64 = base64.b64encode(data).decode()

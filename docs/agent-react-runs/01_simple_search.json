@@ -1,0 +1,28 @@
+{
+  "id": "01_simple_search",
+  "kind": "простая, 1 tool",
+  "task": "Какой телефон визит-центра Казанского Кремля? Ответь по базе знаний.",
+  "ran_at": "2026-08-31T06:13:56.517086+00:00",
+  "naive": {
+    "steps": 2,
+    "error": null,
+    "tools": [
+      "search_knowledge_base"
+    ],
+    "tokens": 385,
+    "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16."
+  },
+  "react": {
+    "steps": 2,
+    "error": null,
+    "tools": [
+      "search_knowledge_base"
+    ],
+    "tokens": 1816,
+    "revisions": 0,
+    "answer": "Телефон визит-центра Казанского Кремля: +7 (843) 567-80-16.",
+    "verdicts": [
+      "OK"
+    ]
+  }
+}

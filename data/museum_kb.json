@@ -1,0 +1,77 @@
+{
+  "source": "https://kazan-kremlin.ru",
+  "updated_at": "2026-09-18",
+  "tickets_url": "https://tickets.kazan-kremlin.ru/?id=1&sid=244",
+  "rules_url": "https://kazan-kremlin.ru/pravila-poseshheniya/",
+  "events_url": "https://kazan-kremlin.ru/sobytiya/",
+  "address": "Казань, Кремль, музей-заповедник «Казанский Кремль»",
+  "hours": [
+    {
+      "id": "museums",
+      "name": "Музеи комплекса",
+      "schedule": "большинство музеев: пн–чт, сб–вс 10:00–18:00; пятница 11:00–20:00; у Манежа понедельник — выходной; Эрмитаж-Казань временно закрыт на монтаж"
+    },
+    {
+      "id": "ticket_offices",
+      "name": "Кассы в музеях",
+      "schedule": "касса каждой площадки закрывается за 30 минут до окончания её работы"
+    },
+    {
+      "id": "islamic_culture",
+      "name": "Музей исламской культуры",
+      "schedule": "ежедневно 9:00–19:30"
+    },
+    {
+      "id": "visit_center",
+      "name": "Визит-центр",
+      "schedule": "ежедневно 8:30–17:30"
+    },
+    {
+      "id": "excursions",
+      "name": "Экскурсионный отдел",
+      "schedule": "8:30–18:00"
+    },
+    {
+      "id": "annunciation",
+      "name": "Благовещенский собор",
+      "schedule": "ежедневно 8:00–20:00"
+    },
+    {
+      "id": "kul_sharif",
+      "name": "Мечеть Кул-Шариф",
+      "schedule": "ежедневно 8:00–20:00"
+    }
+  ],
+  "pages": [
+    {
+      "id": "tickets",
+      "title": "Билеты",
+      "text": "Билеты во все музеи и на выставки Казанского Кремля покупаются на официальной кассе tickets.kazan-kremlin.ru.",
+      "url": "https://tickets.kazan-kremlin.ru/?id=1&sid=244"
+    },
+    {
+      "id": "rules",
+      "title": "Правила посещения",
+      "text": "Правила посещения музея-заповедника опубликованы на официальном сайте.",
+      "url": "https://kazan-kremlin.ru/pravila-poseshheniya/"
+    },
+    {
+      "id": "events",
+      "title": "Афиша",
+      "text": "Актуальные мероприятия и события Казанского Кремля — в разделе «События» на сайте музея.",
+      "url": "https://kazan-kremlin.ru/sobytiya/"
+    },
+    {
+      "id": "location",
+      "title": "Как добраться",
+      "text": "Музей-заповедник расположен в Казанском Кремле. Ориентир — стены Кремля в центре Казани. Точный вход лучше уточнять на сайте kazan-kremlin.ru.",
+      "url": "https://kazan-kremlin.ru"
+    },
+    {
+      "id": "excursions",
+      "title": "Экскурсии",
+      "text": "Экскурсии по комплексу организует экскурсионный отдел. Актуальные программы и время работы уточняйте на официальном сайте или по телефону +7 (843) 567-81-42.",
+      "url": "https://kazan-kremlin.ru/sobytiya/"
+    }
+  ]
+}

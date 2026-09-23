@@ -38,9 +38,12 @@ async def ask_question(message: types.Message, state: FSMContext, backend: Backe
     buffer = ""
     try:
         async for chunk in backend.send_message(chat_id, prompt):
+            if chunk.startswith("[[message_id:"):
+                continue
             buffer += chunk
-            await sent_msg.edit_text(buffer + " ...")
-        await sent_msg.edit_text(buffer)
+            if buffer.strip():
+                await sent_msg.edit_text(buffer + " …")
+        await sent_msg.edit_text(buffer or "⚠️ Ответ не получен.")
         await state.clear()
     except Exception as e:
         await sent_msg.edit_text(f"❌ Ошибка: {str(e)}")

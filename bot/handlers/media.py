@@ -1,131 +1,101 @@
-from aiogram import Router, types, F
-from aiogram.fsm.context import FSMContext
 from io import BytesIO
-from bot.services.backend_client import BackendClient
+
+from aiogram import F, Router, types
+from aiogram.enums import ChatAction
+from aiogram.fsm.context import FSMContext
+
 from bot.keyboards.inline import feedback_kb
-import uuid
+from bot.services.backend_client import BackendClient, friendly_http_error
+from bot.services.streaming import stream_to_chat
 
 router = Router()
+PHOTO_LIMIT = 2 * 1024 * 1024
+
+
+async def _proxy_media(message: types.Message, backend: BackendClient, content: str, data: bytes, mime: str):
+    owner_id = str(message.from_user.id)
+    chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
+    await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+    buffer, message_id = await stream_to_chat(
+        message, backend.send_message(chat_id, content, media=data, mime=mime)
+    )
+    if buffer and message_id:
+        await message.answer("Оцените ответ:", reply_markup=feedback_kb(message_id))
+
+
+def _download_bytes(file_bytes) -> bytes:
+    if hasattr(file_bytes, "getvalue"):
+        return file_bytes.getvalue()
+    if isinstance(file_bytes, BytesIO):
+        return file_bytes.getvalue()
+    return file_bytes
+
 
 @router.message(F.photo)
 async def handle_photo(message: types.Message, backend: BackendClient, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state:
+    if await state.get_state():
         return
-
-    photo = message.photo[-1]
+    candidates = [p for p in message.photo if (p.file_size or 0) <= PHOTO_LIMIT]
+    if not candidates:
+        await message.answer("Фото слишком большое (максимум 2 МБ).")
+        return
+    photo = candidates[-1]
     file = await message.bot.get_file(photo.file_id)
-    file_bytes = await message.bot.download_file(file.file_path)
-    data = file_bytes.getvalue() if hasattr(file_bytes, 'getvalue') else file_bytes
-
-    owner_id = str(message.from_user.id)
-    chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
-
-    sent_msg = await message.answer("🖼️ Обрабатываю фото...")
-    buffer = ""
+    raw = await message.bot.download_file(file.file_path)
     try:
-        async for chunk in backend.send_message(
-            chat_id,
-            content="[фото]",
-            media=data,
-            mime="image/jpeg"
-        ):
-            buffer += chunk
-            await sent_msg.edit_text(buffer + " ...")
-        if buffer:
-            feedback_id = f"{chat_id}_{uuid.uuid4().int & 0xFFFFFFFF}"
-            await sent_msg.edit_text(buffer, reply_markup=feedback_kb(feedback_id))
-        else:
-            await sent_msg.edit_text("⚠️ Ответ не получен.")
-    except Exception as e:
-        error_text = str(e)
-        if "403" in error_text or "moderation_blocked" in error_text:
-            await sent_msg.edit_text("⛔️ Ваше сообщение заблокировано модерацией.")
-        else:
-            await sent_msg.edit_text(f"❌ Ошибка: {error_text}")
+        await _proxy_media(message, backend, message.caption or "[фото]", _download_bytes(raw), "image/jpeg")
+    except Exception as exc:
+        await message.answer(f"❌ {friendly_http_error(exc)}")
+
 
 @router.message(F.voice)
 async def handle_voice(message: types.Message, backend: BackendClient, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state:
+    if await state.get_state():
         return
-
-    voice = message.voice
-    file = await message.bot.get_file(voice.file_id)
-    file_bytes = await message.bot.download_file(file.file_path)
-    data = file_bytes.getvalue() if hasattr(file_bytes, 'getvalue') else file_bytes
-
-    owner_id = str(message.from_user.id)
-    chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
-
-    sent_msg = await message.answer("🎤 Расшифровываю голосовое...")
-    buffer = ""
+    file = await message.bot.get_file(message.voice.file_id)
+    raw = await message.bot.download_file(file.file_path)
     try:
-        async for chunk in backend.send_message(
-            chat_id,
-            content="[голосовое]",
-            media=data,
-            mime="audio/ogg"
-        ):
-            buffer += chunk
-            await sent_msg.edit_text(buffer + " ...")
-        if buffer:
-            feedback_id = f"{chat_id}_{uuid.uuid4().int & 0xFFFFFFFF}"
-            await sent_msg.edit_text(buffer, reply_markup=feedback_kb(feedback_id))
-        else:
-            await sent_msg.edit_text("⚠️ Ответ не получен.")
-    except Exception as e:
-        error_text = str(e)
-        if "403" in error_text or "moderation_blocked" in error_text:
-            await sent_msg.edit_text("⛔️ Ваше сообщение заблокировано модерацией.")
-        else:
-            await sent_msg.edit_text(f"❌ Ошибка: {error_text}")
+        await _proxy_media(message, backend, "[голосовое]", _download_bytes(raw), "audio/ogg")
+    except Exception as exc:
+        await message.answer(f"❌ {friendly_http_error(exc)}")
+
+
+@router.message(F.audio)
+async def handle_audio(message: types.Message, backend: BackendClient, state: FSMContext):
+    if await state.get_state():
+        return
+    audio = message.audio
+    mime = audio.mime_type or "audio/mpeg"
+    file = await message.bot.get_file(audio.file_id)
+    raw = await message.bot.download_file(file.file_path)
+    try:
+        await _proxy_media(message, backend, "[аудио]", _download_bytes(raw), mime)
+    except Exception as exc:
+        await message.answer(f"❌ {friendly_http_error(exc)}")
+
 
 @router.message(F.document)
 async def handle_document(message: types.Message, backend: BackendClient, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state:
+    if await state.get_state():
         return
-
     doc = message.document
     if not doc.file_name:
         return
-    ext = doc.file_name.lower().split('.')[-1] if '.' in doc.file_name else ''
-    if ext not in ('pdf', 'docx'):
+    ext = doc.file_name.lower().rsplit(".", 1)[-1]
+    if ext not in ("pdf", "docx"):
         await message.answer("📄 Пока я умею обрабатывать только PDF и DOCX файлы.")
         return
-    if doc.file_size > 10 * 1024 * 1024:
+    if (doc.file_size or 0) > 10 * 1024 * 1024:
         await message.answer("📄 Файл слишком большой (макс. 10 МБ).")
         return
-
     file = await message.bot.get_file(doc.file_id)
-    file_bytes = await message.bot.download_file(file.file_path)
-    data = file_bytes.getvalue() if hasattr(file_bytes, 'getvalue') else file_bytes
-
-    owner_id = str(message.from_user.id)
-    chat_id = await backend.get_or_create_chat(owner_id, interface="telegram")
-
-    sent_msg = await message.answer("📄 Обрабатываю документ...")
-    buffer = ""
-    mime = "application/pdf" if ext == "pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    raw = await message.bot.download_file(file.file_path)
+    mime = (
+        "application/pdf"
+        if ext == "pdf"
+        else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
     try:
-        async for chunk in backend.send_message(
-            chat_id,
-            content="[документ]",
-            media=data,
-            mime=mime
-        ):
-            buffer += chunk
-            await sent_msg.edit_text(buffer + " ...")
-        if buffer:
-            feedback_id = f"{chat_id}_{uuid.uuid4().int & 0xFFFFFFFF}"
-            await sent_msg.edit_text(buffer, reply_markup=feedback_kb(feedback_id))
-        else:
-            await sent_msg.edit_text("⚠️ Ответ не получен.")
-    except Exception as e:
-    error_text = str(e)
-    print(f"ERROR: {error_text}")  # для отладки
-    if "403" in error_text or "moderation_blocked" in error_text:
-        await sent_msg.edit_text("⛔️ Ваше сообщение заблокировано модерацией.")
-    else:
-        await sent_msg.edit_text(f"❌ Ошибка: {error_text}")
+        await _proxy_media(message, backend, message.caption or "[документ]", _download_bytes(raw), mime)
+    except Exception as exc:
+        await message.answer(f"❌ {friendly_http_error(exc)}")

@@ -1,52 +1,53 @@
 import asyncio
 import logging
+
+import httpx
 import uvicorn
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.fsm.storage.memory import MemoryStorage
+
 from bot.config import get_bot_settings
+from bot.handlers import admin, commands, feedback, fsm, media, text
 from bot.services.backend_client import BackendClient
-from bot.handlers import commands, text, fsm, media
 from bot.web import build_api
-from bot.handlers import commands, text, fsm, media, feedback
 
 logging.basicConfig(level=logging.INFO)
 
+
 async def main():
     settings = get_bot_settings()
-
-    # Прокси для Telegram
-    proxy_url = "http://local_user:p32kcF26NhWE@72.56.89.38:8888"
-    # или socks5://...
-    session = AiohttpSession(proxy=proxy_url)
+    session = AiohttpSession(proxy=settings.proxy) if settings.proxy else None
     bot = Bot(token=settings.bot_token, session=session)
-
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
+    timeout = httpx.Timeout(connect=3.0, read=60.0, write=10.0, pool=5.0)
+    http = httpx.AsyncClient(timeout=timeout, trust_env=False)
     backend_client = BackendClient(
-    base_url=settings.backend_url,
-    admin_token=settings.admin_token,  # <-- добавьте эту строку
-    timeout=settings.backend_timeout
+        base_url=settings.backend_url,
+        admin_token=settings.admin_token,
+        timeout=settings.backend_timeout,
+        http=http,
     )
     dp["backend"] = backend_client
 
     dp.include_router(commands.router)
-    dp.include_router(text.router)
+    dp.include_router(admin.router)
     dp.include_router(fsm.router)
+    dp.include_router(text.router)
     dp.include_router(media.router)
     dp.include_router(feedback.router)
 
-    # Запускаем API для /notify
     api = build_api(bot, settings.internal_token)
     config = uvicorn.Config(api, host="0.0.0.0", port=settings.bot_api_port, log_level="info")
     server = uvicorn.Server(config)
+    try:
+        await asyncio.gather(dp.start_polling(bot), server.serve())
+    finally:
+        await http.aclose()
+        await bot.session.close()
 
-    # Запускаем polling и API параллельно
-    await asyncio.gather(
-        dp.start_polling(bot),
-        server.serve()
-    )
 
 if __name__ == "__main__":
     asyncio.run(main())

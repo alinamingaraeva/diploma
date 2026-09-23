@@ -1,6 +1,3 @@
-import pytest
+from tests.app.chat.test_media import test_whisper_stub
 
-def test_whisper_transcribe_exists():
-    """Проверяем, что функция whisper_transcribe определена."""
-    from app.chat.media import whisper_transcribe
-    assert callable(whisper_transcribe)
+__all__ = ["test_whisper_stub"]

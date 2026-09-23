@@ -1,8 +1,10 @@
 .git
 .gitignore
 .github/
+.codex-pptx-build/
 .venv/
 venv/
+var/
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -13,9 +15,9 @@ __pycache__/
 !.env.example
 tests/
 notebooks/
-data/
-*.md
-!.README.md
+домашняя работа/
+Финальная защита/
+data/uploads/
 .vscode/
 .idea/
 .DS_Store

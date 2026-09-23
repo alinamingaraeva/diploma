@@ -1,0 +1,19 @@
+model_list:
+  - model_name: primary
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_base: https://api.polza.ai/v1
+      api_key: os.environ/OPENAI__API_KEY
+  - model_name: fallback
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_base: https://api.openai.com/v1
+      api_key: os.environ/OPENAI_FALLBACK_API_KEY
+
+router_settings:
+  routing_strategy: simple-shuffle
+  fallbacks:
+    - primary: ["fallback"]
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

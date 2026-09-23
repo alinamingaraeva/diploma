@@ -1,0 +1,28 @@
+{
+  "id": "02_simple_time",
+  "kind": "простая, 1 tool",
+  "task": "Который сейчас час в часовом поясе Europe/Moscow? Нужна метка времени, не часы музея.",
+  "ran_at": "2026-08-31T06:14:06.660770+00:00",
+  "naive": {
+    "steps": 2,
+    "error": null,
+    "tools": [
+      "get_current_time"
+    ],
+    "tokens": 382,
+    "answer": "В часовом поясе Europe/Moscow сейчас 09:13:59."
+  },
+  "react": {
+    "steps": 2,
+    "error": null,
+    "tools": [
+      "get_current_time"
+    ],
+    "tokens": 1018,
+    "revisions": 0,
+    "answer": "Сейчас 31 августа 2026 года, 09:14:03 по московскому времени.",
+    "verdicts": [
+      "OK"
+    ]
+  }
+}

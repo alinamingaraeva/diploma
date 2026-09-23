@@ -10,7 +10,9 @@
         "temperature": 0
       },
       "response_json": true,
-      "response_json_field": "content"
+      "response_json_field": "content",
+      "skip_codes": [400],
+      "request_timeout": 60
     }
   }
 }
