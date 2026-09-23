@@ -26,15 +26,18 @@ Telegram-бот и FastAPI-backend: часы, билеты, телефоны, п
 ## Архитектура
 
 ```mermaid
-flowchart LR
-  USER["Посетитель Telegram"] --> BOT["Бот aiogram тонкий клиент"]
-  BOT -->|"SSE /chats"]| API["FastAPI ChatService"]
-  API --> MOD["Модерация + фильтр выхода"]
+flowchart TD
+  USER["Посетитель Telegram"] --> BOT["Бот aiogram"]
+  BOT --> API["FastAPI ChatService"]
+  API --> MOD["Модерация запроса и ответа"]
+  MOD --> ROUTE["Выбор источника по типу вопроса"]
+  ROUTE --> LIVE["Свежие события: официальный сайт kazan-kremlin.ru"]
+  ROUTE --> RAG["Устойчивые сведения и резерв: RAG Qdrant"]
+  LIVE --> LLM["Polza gpt-4o-mini"]
+  RAG --> LLM
+  LLM --> SSE["Ответ по SSE в Telegram"]
   API --> HIST["История JSONL или Postgres"]
-  API --> LIVE["Официальный сайт kazan-kremlin.ru"]
-  API --> RAG["RAG Qdrant rag_eval_1024 — резерв и постоянные сведения"]
-  RAG --> LLM["Polza gpt-4o-mini"]
-  API --> AGENT["Агент LangGraph HIL"]
+  API --> AGENT["Отдельный учебный агент LangGraph HIL"]
 ```
 
 Бот не хранит историю и не вызывает модель. Подробности и ADR: [docs/architecture.md](docs/architecture.md). Итоговые решения (что выбрано / из чего / почему): [docs/decisions.md](docs/decisions.md). Ограничения: [docs/limitations.md](docs/limitations.md).
