@@ -17,6 +17,7 @@ INJECTION_PATTERNS: Final[list[re.Pattern[str]]] = [
 ]
 ENCODING_MARKER_RE: Final = re.compile(r"\b(base64|decode\s+the\s+following)\b", re.IGNORECASE)
 BASE64_TOKEN_RE: Final = re.compile(r"(?<![A-Za-z0-9+/])[A-Za-z0-9+/]{8,}={0,2}(?![A-Za-z0-9+/])")
+URL_RE: Final = re.compile(r"https?://[^\s<>]+", re.IGNORECASE)
 
 MAX_INPUT_CHARS: Final[int] = 4000
 NON_PRINTABLE_RATIO_LIMIT: Final[float] = 0.10
@@ -54,7 +55,11 @@ def validate_input(text: str) -> ValidationResult:
 
     # Garak InjectBase64 и похожие атаки передают длинную закодированную
     # инструкцию как один base64-блок. Обычные музейные запросы таких блоков не содержат.
-    if ENCODING_MARKER_RE.search(text) or _contains_decodable_base64(text):
+    # Части обычного URL могут случайно выглядеть как base64. Проверяем
+    # закодированные блоки вне ссылок; injection-паттерны ниже по-прежнему
+    # применяются ко всему исходному сообщению.
+    text_without_urls = URL_RE.sub("", text)
+    if ENCODING_MARKER_RE.search(text_without_urls) or _contains_decodable_base64(text_without_urls):
         return ValidationResult(False, "base64-like encoded payload", rule="encoding")
 
     for pat in INJECTION_PATTERNS:

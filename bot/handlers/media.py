@@ -43,7 +43,14 @@ async def handle_photo(message: types.Message, backend: BackendClient, state: FS
     file = await message.bot.get_file(photo.file_id)
     raw = await message.bot.download_file(file.file_path)
     try:
-        await _proxy_media(message, backend, message.caption or "[фото]", _download_bytes(raw), "image/jpeg")
+        await _proxy_media(
+            message,
+            backend,
+            message.caption
+            or "Проанализируй фото: распознай видимый текст и кратко объясни, что на нём показано по теме музеев Казанского Кремля.",
+            _download_bytes(raw),
+            "image/jpeg",
+        )
     except Exception as exc:
         await message.answer(f"❌ {friendly_http_error(exc)}")
 

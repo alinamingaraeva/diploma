@@ -1,4 +1,9 @@
-from app.services.agent_react import TOOLS, run_react_with_reflection
+from app.services.agent_react import SYSTEM, TOOLS, run_react_with_reflection
+
+
+def test_system_delegates_send_confirmation_to_graph():
+    assert "обязательно вызови send_telegram_message" in SYSTEM
+    assert "граф сам остановит действие" in SYSTEM
 
 
 def test_react_rejects_huge_iteration_cap():

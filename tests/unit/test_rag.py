@@ -62,3 +62,21 @@ def test_unique_by_file_strips_pdf_hash_prefix():
     unique = rag._unique_by_file(nodes, top_n=5)
     stems = [n.node.metadata["file_name"] for n in unique]
     assert stems == ["hours.md", "tickets.md"]
+
+
+def test_condense_does_not_attach_new_self_contained_topic_to_museum_history():
+    rag = RAGService.__new__(RAGService)
+    rag.llm = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(
+                create=lambda **kwargs: (_ for _ in ()).throw(AssertionError("LLM must not be called"))
+            )
+        )
+    )
+    question = "Кто стал чемпионом мира по футболу в 2018 году?"
+    history = [
+        {"role": "user", "content": "Какие выставки в Эрмитаже?"},
+        {"role": "assistant", "content": "Отдельная выставка не указана."},
+    ]
+
+    assert rag._condense(question, history) == question

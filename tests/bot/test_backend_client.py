@@ -4,7 +4,14 @@ import uuid
 import httpx
 import pytest
 
-from bot.services.backend_client import BackendClient
+from bot.services.backend_client import BackendClient, media_filename
+
+
+def test_media_filename_matches_mime():
+    assert media_filename("audio/ogg") == "voice.ogg"
+    assert media_filename("image/jpeg") == "photo.jpg"
+    assert media_filename("application/pdf") == "document.pdf"
+    assert media_filename("application/unknown") == "file.bin"
 
 
 @pytest.mark.asyncio

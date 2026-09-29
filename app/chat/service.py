@@ -1,6 +1,7 @@
 import asyncio
 import hashlib
 import json
+import re
 import time
 from collections.abc import AsyncIterator
 from typing import Optional
@@ -19,8 +20,30 @@ from app.observability.pii import prompt_hash, redact_pii
 from app.prompts.loader import render_system_prompt
 from app.services.security.input_validator import validate_input
 from app.services.security.output_filter import filter_output
+from app.services.official_site import extract_official_url
 
 logger = get_logger(__name__)
+
+
+_LAST_USER_MESSAGE_PATTERNS = (
+    re.compile(r"\bо\s+ч[её]м\s+я\s+спрашивал[аи]?\b.*\b(последн|до\s+этого|перед\s+этим)", re.IGNORECASE),
+    re.compile(r"\bчто\s+я\s+(?:спрашивал[аи]?|писал[аи]?|написал[аи]?)\b.*\b(последн|до\s+этого|перед\s+этим)", re.IGNORECASE),
+    re.compile(r"\b(?:мой|моя)\s+(?:последн\w*|предыдущ\w*)\s+(?:вопрос|сообщени|смс)\b", re.IGNORECASE),
+    re.compile(r"\b(?:последн\w*|предыдущ\w*)\s+(?:мой|моя)\s+(?:вопрос|сообщени|смс)\b", re.IGNORECASE),
+)
+
+
+def previous_user_message_answer(question: str, history: list[ChatMessage]) -> str | None:
+    """Отвечает на явный вопрос о предыдущей реплике, не отправляя его в RAG."""
+    normalized = " ".join((question or "").split())
+    if not any(pattern.search(normalized) for pattern in _LAST_USER_MESSAGE_PATTERNS):
+        return None
+    user_messages = [item.content.strip() for item in history if item.role == "user" and item.content.strip()]
+    if user_messages and user_messages[-1] == question.strip():
+        user_messages.pop()
+    if not user_messages:
+        return "В истории пока нет предыдущего вопроса."
+    return f"В предыдущем сообщении вы спросили: «{user_messages[-1]}»"
 
 
 class ChatService:
@@ -80,8 +103,19 @@ class ChatService:
             )
 
         media_part = None
+        media_mime = ""
+        rag_query = user_content
         if media:
             media_part = await media_to_part(media)
+            media_mime = (media.content_type or "").lower()
+            if media_mime.startswith("audio/") or media_mime == "application/ogg":
+                transcript = str(media_part.get("text") or "")
+                transcript = transcript.removeprefix("[пользователь сказал голосом]:").strip()
+                if transcript:
+                    # Голосовой вопрос после Whisper должен идти тем же путём, что и
+                    # обычный текст: через RAG и, для меняющихся сведений, официальный сайт.
+                    rag_query = transcript
+                    user_content = f"[голосовое сообщение] {transcript}"
 
         user_msg = ChatMessage(
             chat_id=chat_id,
@@ -92,7 +126,12 @@ class ChatService:
                     "mime": media.content_type,
                     "size": getattr(media, "size", None),
                     "filename": media.filename,
-                    "part": media_part,
+                    # Транскрипт уже сохранён в content. Не дублируем его в контексте.
+                    **(
+                        {}
+                        if media_mime.startswith("audio/") or media_mime == "application/ogg"
+                        else {"part": media_part}
+                    ),
                 }
                 if media_part
                 else None
@@ -125,8 +164,29 @@ class ChatService:
         assistant_id = None
         rag_sources = None
 
+        recall_answer = previous_user_message_answer(user_content, history)
+        official_url = (
+            extract_official_url(user_content)
+            if media_part and media_mime.startswith("image/")
+            else None
+        )
+
         try:
-            if media_part:
+            if recall_answer:
+                full_response = recall_answer
+                for i in range(0, len(full_response), 24):
+                    yield full_response[i : i + 24]
+            elif official_url and self.rag is not None:
+                rag_result = await asyncio.to_thread(
+                    self.rag.answer_from_official_url,
+                    user_content,
+                    official_url,
+                )
+                full_response = rag_result.get("answer") or ""
+                rag_sources = rag_result.get("sources") or []
+                for i in range(0, len(full_response), 24):
+                    yield full_response[i : i + 24]
+            elif media_part and not (media_mime.startswith("audio/") or media_mime == "application/ogg"):
                 async for delta in self._stream_completion(messages):
                     full_response += delta
                     yield delta
@@ -136,9 +196,9 @@ class ChatService:
                     for item in history
                     if item.role in {"user", "assistant"}
                 ]
-                if prior and prior[-1]["role"] == "user" and prior[-1]["content"] == user_content:
+                if prior and prior[-1]["role"] == "user":
                     prior = prior[:-1]
-                rag_result = await asyncio.to_thread(self.rag.answer, user_content, prior)
+                rag_result = await asyncio.to_thread(self.rag.answer, rag_query, prior)
                 full_response = rag_result.get("answer") or ""
                 rag_sources = rag_result.get("sources") or []
                 for i in range(0, len(full_response), 24):

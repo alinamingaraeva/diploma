@@ -53,12 +53,22 @@ WEEKLY_LINK_MARKERS = (
     "vyhodnye-v-kazanskom-kremle",
 )
 
+URL_RE = re.compile(r"https://(?:www\.)?kazan-kremlin\.ru/[^\s<>\"']+", re.IGNORECASE)
+
 
 @dataclass(frozen=True)
 class OfficialSource:
     title: str
     url: str
     text: str
+
+
+def extract_official_url(text: str) -> str | None:
+    """Возвращает первую HTTPS-ссылку на официальный сайт из подписи пользователя."""
+    match = URL_RE.search(text or "")
+    if not match:
+        return None
+    return match.group(0).rstrip(".,;:!?)]}»")
 
 
 class _TextExtractor(HTMLParser):
@@ -206,6 +216,15 @@ class OfficialSiteRetriever:
         named_museum = any(_contains_terms(lowered, terms) for terms, _, _ in MUSEUM_PAGES)
         changing_fact = any(marker in lowered for marker in FRESHNESS_MARKERS)
         return named_museum or ("музе" in lowered and changing_fact)
+
+    def fetch_url(self, url: str) -> OfficialSource:
+        """Безопасно читает конкретную страницу официального сайта из сообщения."""
+        raw = self._get(url)
+        text = html_to_text(raw)
+        if len(text) < 40:
+            raise ValueError("На официальной странице не найдено достаточно текста")
+        title = text.splitlines()[0][:160] if text else url
+        return OfficialSource(title=title, url=url, text=text)
 
     def search(self, question: str) -> list[OfficialSource]:
         urls: list[str] = []

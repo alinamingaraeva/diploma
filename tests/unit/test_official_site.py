@@ -26,7 +26,7 @@ def test_live_search_uses_latest_weekly_page_and_named_museum():
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
     retriever = OfficialSiteRetriever(client)
-    sources = retriever.search("Какая выставка будет в музее естественной истории в эти выходные?")
+    sources = retriever.search("Какая выставка сейчас в музее естественной истории?")
 
     assert len(sources) == 2
     assert sources[0].url.endswith("meropriyatiya-kazanskogo-kremlya-21-27-sentyabrya")

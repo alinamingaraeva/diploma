@@ -6,6 +6,23 @@ from typing import Optional
 import httpx
 
 
+MEDIA_FILENAMES = {
+    "audio/ogg": "voice.ogg",
+    "application/ogg": "voice.ogg",
+    "audio/mpeg": "audio.mp3",
+    "audio/mp4": "audio.m4a",
+    "audio/wav": "audio.wav",
+    "image/jpeg": "photo.jpg",
+    "image/png": "photo.png",
+    "application/pdf": "document.pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "document.docx",
+}
+
+
+def media_filename(mime: str | None) -> str:
+    return MEDIA_FILENAMES.get((mime or "").lower(), "file.bin")
+
+
 def friendly_http_error(exc: Exception) -> str:
     if isinstance(exc, httpx.ConnectError):
         return "Сервис недоступен, попробуйте позже"
@@ -72,7 +89,7 @@ class BackendClient:
         mime: Optional[str] = None,
     ) -> AsyncIterator[str]:
         data = {"content": content}
-        files = {"media": ("file.bin", media, mime)} if media and mime else None
+        files = {"media": (media_filename(mime), media, mime)} if media and mime else None
         timeout = httpx.Timeout(connect=3.0, read=120.0, write=10.0, pool=5.0)
         client = self._http or httpx.AsyncClient(timeout=timeout, trust_env=False)
         close = self._http is None

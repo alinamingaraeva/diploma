@@ -89,6 +89,26 @@ class RAGService:
     def _condense(self, question: str, history: list[dict] | None) -> str:
         if not history:
             return question
+        lowered = question.lower().strip()
+        follow_up_markers = (
+            "там",
+            "туда",
+            "этот",
+            "эта ",
+            "это ",
+            "эти ",
+            "для него",
+            "для неё",
+            "для них",
+        )
+        # Полный самостоятельный вопрос не нужно привязывать к прошлой теме.
+        # Иначе после вопроса о музее новый вопрос о футболе превращался в
+        # продолжение музейного диалога и повторял предыдущий ответ.
+        is_follow_up = lowered.startswith("а ") or any(
+            marker in lowered for marker in follow_up_markers
+        )
+        if len(question.split()) >= 6 and not is_follow_up:
+            return question
         turns = []
         for item in history[-8:]:
             role = item.get("role")
@@ -106,6 +126,9 @@ class RAGService:
                         "Перепиши последний вопрос посетителя в самодостаточный запрос к базе "
                         "музеев Казанского Кремля. Сохрани язык и интент из истории "
                         "(телефон, часы, билеты, правила и т.д.). "
+                        "Используй историю только если последний вопрос содержит местоимение, "
+                        "пропущенный объект или явно является коротким уточнением. Если это новый "
+                        "самостоятельный вопрос на другую тему, верни его без изменений. "
                         "Пример: история про телефон визит-центра + «а для экскурсий?» → "
                         "«Какой телефон отдела экскурсий Казанского Кремля?». "
                         "Верни только переписанный вопрос, без кавычек и пояснений."
@@ -279,6 +302,18 @@ class RAGService:
             "top_score": top_score,
             "confident": True,
             "sources": sources,
+        }
+
+    def answer_from_official_url(self, question: str, url: str) -> dict:
+        """Отвечает по конкретной официальной странице, приложенной к фото."""
+        if self.official_site is None:
+            return {"answer": REFUSAL, "top_score": 0.0, "confident": False, "sources": []}
+        source = self.official_site.fetch_url(url)
+        return {
+            "answer": self._generate_live(question, [source]),
+            "top_score": 1.0,
+            "confident": True,
+            "sources": self._format_live_sources([source]),
         }
 
     def _node_text(self, node) -> str:

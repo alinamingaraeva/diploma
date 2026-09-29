@@ -5,6 +5,7 @@ pydantic-settings>=2.0.0
 redis>=5.0.0
 httpx[socks]>=0.28.0
 arize-phoenix
+graphql-core==3.2.12
 openinference-instrumentation-openai
 structlog>=26.1.0
 presidio-analyzer
