@@ -47,7 +47,7 @@ async def hours_info(message: types.Message):
 async def poster_info(message: types.Message):
     await message.answer(
         "📅 Афиша мероприятий и событий Казанского Кремля:\n"
-        "https://kazan-kremlin.ru/sobytiya/"
+        "https://kazan-kremlin.ru/afisha"
     )
 
 
