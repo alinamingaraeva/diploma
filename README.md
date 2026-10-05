@@ -4,7 +4,7 @@ Telegram-бот и FastAPI-backend: часы, билеты, телефоны, п
 
 Бот в Telegram: `@KazanKremlinBot` (токен в `.env`, в репозиторий не кладётся).
 
-Демонстрация для ИА: видео 5–7 минут
+Видео демонстрации для ИА (5–7 минут): [смотреть на Яндекс Диске](https://disk.yandex.ru/d/9WiNJuxYtcUs2A).
 
 ## Сценарии использования
 
@@ -70,7 +70,7 @@ python -m bot
 pytest tests app/tests -q --basetemp=var/pytest
 ```
 
-Контрольный прогон 22.09.2026 после добавления живого поиска по официальному сайту: **83 passed**. Отдельные контрактные тесты репозиториев выполнены с запущенным PostgreSQL: **12 passed**, варианты `json` и `postgres` прошли без `skip`.
+Контрольный прогон 05.10.2026 после добавления раскрытия источников в Telegram: **96 passed**. В демонстрационном видео зафиксирован предыдущий успешный прогон из 90 тестов. В набор входят unit-тесты, Telegram-клиент, работа с медиа, память диалога, официальный сайт, агент и контрактные тесты репозиториев с вариантами `json` и `postgres`.
 
 Оценка RAG (платно по токенам, уже посчитана в отчёте): цифры в [docs/rag_evaluation.md](docs/rag_evaluation.md).
 
@@ -116,7 +116,7 @@ pytest tests app/tests -q --basetemp=var/pytest
 - [docs/embeddings.md](docs/embeddings.md), [docs/vector_store.md](docs/vector_store.md), [docs/chunking_experiment.md](docs/chunking_experiment.md)
 - [scripts/benchmark_results.md](scripts/benchmark_results.md) — реальный async-бенчмарк ДЗ 3.3
 - [docs/security/garak_baseline_2026-09-18.md](docs/security/garak_baseline_2026-09-18.md) и [docs/security/garak_after_2026-09-18.md](docs/security/garak_after_2026-09-18.md) — реальные прогоны Garak ДЗ 3.8
-- [Финальная презентация](Финальная%20защита/Презентация-ИА-финальная-2026-09-21.pptx) — 12 слайдов, включая схему архитектуры
+- [Финальная презентация](Финальная%20защита/Презентация-ИА-финальная-05-10-2026.pptx) — 12 слайдов, включая схему архитектуры
 
 ## Function calling (ДЗ 3.1)
 

@@ -64,6 +64,31 @@ def test_unique_by_file_strips_pdf_hash_prefix():
     assert stems == ["hours.md", "tickets.md"]
 
 
+def test_format_sources_extracts_title_and_official_url():
+    inner = SimpleNamespace(
+        metadata={"file_name": "rules.md"},
+        get_content=lambda: (
+            "# Правила посещения Казанского Кремля\n\n"
+            "Источник: https://kazan-kremlin.ru/pravila-poseshheniya/"
+        ),
+    )
+    node = SimpleNamespace(node=inner, score=0.91)
+    rag = RAGService.__new__(RAGService)
+
+    assert rag._format_sources([node])[0] == {
+        "id": 1,
+        "title": "Правила посещения Казанского Кремля",
+        "url": "https://kazan-kremlin.ru/pravila-poseshheniya/",
+        "file_name": "rules.md",
+        "page": None,
+        "score": 0.91,
+        "snippet": (
+            "# Правила посещения Казанского Кремля\n\n"
+            "Источник: https://kazan-kremlin.ru/pravila-poseshheniya/"
+        ),
+    }
+
+
 def test_condense_does_not_attach_new_self_contained_topic_to_museum_history():
     rag = RAGService.__new__(RAGService)
     rag.llm = SimpleNamespace(

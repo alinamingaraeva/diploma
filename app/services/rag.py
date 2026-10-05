@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -163,9 +164,19 @@ class RAGService:
                 except (TypeError, ValueError):
                     page = str(page)
             snippet = str(raw).replace("\r\n", "\n").replace("\r", "\n")[:300]
+            normalized_snippet = snippet.replace("\u00ad", "").replace("\u00a0", " ")
+            first_line = next(
+                (line.strip() for line in normalized_snippet.splitlines() if line.strip()), ""
+            )
+            heading_match = re.search(r"(?m)^\s*#+\s*(.+?)\s*$", normalized_snippet)
+            title = (heading_match.group(1) if heading_match else first_line).strip()
+            url_match = re.search(r"https?://[^\s<>\"]+", normalized_snippet)
+            source_url = url_match.group(0).rstrip(".,;:)]}") if url_match else None
             sources.append(
                 {
                     "id": index,
+                    "title": title or None,
+                    "url": source_url,
                     "file_name": meta.get("file_name") or meta.get("source") or "unknown",
                     "page": page,
                     "score": round(float(getattr(node, "score", 0.0) or 0.0), 3),
@@ -255,6 +266,7 @@ class RAGService:
         return [
             {
                 "id": index,
+                "title": source.title,
                 "file_name": source.url,
                 "page": None,
                 "score": 1.0,
